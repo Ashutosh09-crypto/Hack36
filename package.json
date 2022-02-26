@@ -1,0 +1,22 @@
+{
+  "name": "padaicrow",
+  "version": "1.0.0",
+  "description": "Hackathon Project",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ashutosh09-crypto/Hack36.git"
+  },
+  "author": "Kehndi Hundi Si",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ashutosh09-crypto/Hack36/issues"
+  },
+  "homepage": "https://github.com/Ashutosh09-crypto/Hack36#readme",
+  "dependencies": {
+    "mongoose": "^6.2.3"
+  }
+}
