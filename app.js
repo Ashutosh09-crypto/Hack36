@@ -221,6 +221,11 @@ app.post("/teacher/submitreward",async(req,res)=>{
 
 })
 
+app.get("/teacher/logout",(req,res)=>{
+    req.session.teacherData={};
+    res.redirect("/teacher/login");
+})
+
 
 app.listen(3000, () => {
     console.log("STARTED");
