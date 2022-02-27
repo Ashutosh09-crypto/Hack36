@@ -11,6 +11,7 @@ const { resolveSoa } = require('dns');
 
 const teachers = require('./models/teacher.js');
 const students = require('./models/student.js');
+const schools = require('./models/school.js');
 
 mongoose.connect('mongodb://localhost:27017/padaiCrow', { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
@@ -103,13 +104,13 @@ app.get("/student/dashboard", async (req, res) => {
         if (task["class"] === clas)
             tasks = task["tasks"];
     });
-    res.render('students/dashboard.ejs', { allStudents, tasks,student,teacher });
+    res.render('students/dashboard.ejs', { allStudents, tasks, student, teacher });
 })
 
 
 //teacher route
 app.get("/teacher/login", (req, res) => {
-    
+
     res.render("teacher/login.ejs");
 })
 
@@ -118,7 +119,7 @@ app.post("/teacher/teacherAuth", async (req, res) => {
     const user = await teachers.find({ email: req.body.email })
     if (user[0].password === req.body.pass) {
         console.log("user is authenticated ");
-        req.session.teacherData=user[0];
+        req.session.teacherData = user[0];
         res.redirect("/teacher/classes");
     } else {
         res.redirect("/teacher/login");
@@ -135,100 +136,175 @@ app.get("/teacher/profile", (req, res) => {
 })
 
 app.get("/teacher/class:num", (req, res) => {
-    res.render("teacher/dashboard",{num:req.params.num,user:req.session.teacherData})
+    res.render("teacher/dashboard", { num: req.params.num, user: req.session.teacherData })
 })
 
-app.get("/studentsdata:class",async (req,res)=>{
-    const currentclass=req.params.class.substring(1,);
+app.get("/studentsdata:class", async (req, res) => {
+    const currentclass = req.params.class.substring(1,);
     const currentteacher = (req.session.teacherData);
 
-    if(currentteacher){
-        const users = await students.find({schoolld:currentteacher.schoolld,class:currentclass,subject : { $elemMatch : {$eq:currentteacher.subject}}})
+    if (currentteacher) {
+        const users = await students.find({ schoolld: currentteacher.schoolld, class: currentclass, subject: { $elemMatch: { $eq: currentteacher.subject } } })
         console.log(users);
         res.send(JSON.stringify(users));
     }
 
 })
 
-app.get("/taskdata:class",async (req,res)=>{
-    const currentclass=req.params.class.substring(1,);
+app.get("/taskdata:class", async (req, res) => {
+    const currentclass = req.params.class.substring(1,);
     const currentteacher = (req.session.teacherData);
 
-    if(currentteacher){
+    if (currentteacher) {
         res.send(JSON.stringify(req.session.teacherData));
     }
 
 })
 
-app.get("/teacher/addtask",async (req,res)=>{
+app.get("/teacher/addtask", async (req, res) => {
     res.render("teacher/addtask");
 });
 
 
-app.post("/teacher/submittask",async (req,res)=>{
+app.post("/teacher/submittask", async (req, res) => {
     const currentteacher = (req.session.teacherData);
-    const tasklist =currentteacher.taskList;
+    const tasklist = currentteacher.taskList;
 
-    let index = tasklist.findIndex((e)=> (e.class == req.body.currentclass));
+    let index = tasklist.findIndex((e) => (e.class == req.body.currentclass));
     tasklist[index].tasks.push({
-        "taskName" : req.body.taskname,
-        "taskDescription" : req.body.taskDescription,
-        "startDate" : req.body.startDate,
-        "endDate" : req.body.EndDate
+        "taskName": req.body.taskname,
+        "taskDescription": req.body.taskDescription,
+        "startDate": req.body.startDate,
+        "endDate": req.body.EndDate
     });
 
-    await teachers.updateOne({_id: (currentteacher._id)},{taskList: tasklist});
+    await teachers.updateOne({ _id: (currentteacher._id) }, { taskList: tasklist });
 
-    let user = await teachers.findById({_id: (currentteacher._id)});
+    let user = await teachers.findById({ _id: (currentteacher._id) });
     req.session.teacherData = user;
     res.redirect("/teacher/classes");
 
 });
 
-app.get("/teacher/rewardStudents",async(req,res)=>{
+app.get("/teacher/rewardStudents", async (req, res) => {
     const currentteacher = (req.session.teacherData);
 
-    res.render("teacher/rewardStudent",{user:currentteacher});
+    res.render("teacher/rewardStudent", { user: currentteacher });
 });
 
-app.get("/studentfromclassx:class",async (req,res)=>{
+app.get("/studentfromclassx:class", async (req, res) => {
 
-    const currentclass=req.params.class.substring(1,);
+    const currentclass = req.params.class.substring(1,);
     const currentteacher = (req.session.teacherData);
 
-    if(currentteacher && currentclass){
-        const users = await students.find({schoolld:currentteacher.schoolld,class:currentclass,subject : { $elemMatch : {$eq:currentteacher.subject}}})
+    if (currentteacher && currentclass) {
+        const users = await students.find({ schoolld: currentteacher.schoolld, class: currentclass, subject: { $elemMatch: { $eq: currentteacher.subject } } })
         res.send(JSON.stringify(users));
     }
 
 })
 
-app.post("/teacher/submitreward",async(req,res)=>{
+app.post("/teacher/submitreward", async (req, res) => {
 
     const currentteacher = (req.session.teacherData);
 
-    if(currentteacher){
-        const stu = await students.findById({_id: (req.body.students)});
+    if (currentteacher) {
+        const stu = await students.findById({ _id: (req.body.students) });
         let currentxp;
 
         stu.xp.forEach(e => {
-            if(e.subjectName===currentteacher.subject){
-                currentxp= e.Xp;
+            if (e.subjectName === currentteacher.subject) {
+                currentxp = e.Xp;
             }
         });
 
-        await students.updateOne({_id: (req.body.students),"xp.subjectName" : currentteacher.subject},{$set:{"xp.$.Xp": parseInt(currentxp+parseInt(req.body.xp))}});
+        await students.updateOne({ _id: (req.body.students), "xp.subjectName": currentteacher.subject }, { $set: { "xp.$.Xp": parseInt(currentxp + parseInt(req.body.xp)) } });
         res.redirect("/teacher/classes");
     }
 
 
 })
 
-app.get("/teacher/logout",(req,res)=>{
-    req.session.teacherData={};
+app.get("/teacher/logout", (req, res) => {
+    req.session.teacherData = {};
     res.redirect("/teacher/login");
 })
 
+
+// school routes
+
+app.get('/schoolLogin', async (req, res) => {
+    res.render("school/schoolLogin.ejs");
+})
+
+app.post('/schoolLogin', async (req, res) => {
+    const { schoolEmail, schoolPassword } = req.body;
+    const school = await schools.findOne({ email: schoolEmail, password: schoolPassword });
+
+    if (!school) {
+        res.send("Sorry, No school found!");
+    }
+    else {
+        const name = school.name;
+        req.session.school = schoolEmail;
+        req.session.schoolId = school._id;
+        res.redirect('/school/dashboard');
+    }
+})
+
+app.get('/school/dashboard', async (req, res) => {
+    const school = await schools.findOne({ email: req.session.school });
+    const name = school.name;
+    res.render('school/schoolDashboard.ejs', { name });
+})
+
+app.get('/school/teachers', async (req, res) => {
+    const school = await schools.findOne({ email: req.session.school });
+    const allTeachers = await teachers.find({ schoolId: school._id });
+    res.render('school/schoolTeachers.ejs', { allTeachers });
+})
+
+app.get('/school/students', async (req, res) => {
+    res.render("school/schoolStudents.ejs");
+})
+
+// registration of new student
+
+app.post('/school/addStudent', async (req, res) => {
+    const { studentName, studentEmail, studentDob, studentClass } = req.body;
+    const isExisting = await students.findOne({ email: studentEmail });
+
+    if (isExisting) {
+        res.send('Student already exist with such email!');
+    }
+    else {
+        const schoolId = req.session.schoolId;
+        const student = new students({
+            name: studentName,
+            email: studentEmail,
+            dob: studentDob,
+            class: studentClass,
+            schoolId: schoolId
+        });
+
+        await student.save();
+        res.redirect('/school/students');
+    }
+
+})
+
+app.post('/school/searchStudent', async (req, res) => {
+    const { studentEmail } = req.body;
+    const isExisting = await students.findOne({ email: studentEmail });
+
+    if (!isExisting) {
+        res.send("Sorry, no student found!");
+    }
+    else {
+        req.session.user = studentEmail;
+        res.redirect('/students');
+    }
+})
 
 app.listen(3000, () => {
     console.log("STARTED");
