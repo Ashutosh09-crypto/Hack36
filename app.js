@@ -38,13 +38,6 @@ app.use(cookieParser());
 // parse application/json
 app.use(bodyParser.json())
 
-// For an actual app you should configure this with an experation time, better keys, proxy and secure
-app.use(cookieSession({
-    name: 'tuto-session',
-    keys: ['key1', 'key2']
-}))
-
-
 //teacher route
 app.get("/teacher/login", (req, res) => {
     res.render("teacher/login.ejs");
@@ -184,9 +177,6 @@ app.get("/student/dashboard", async (req, res) => {
     console.log(tasks);
     res.render('students/dashboard.ejs', { allStudents, tasks });
 })
-
-// teacher routes
-
 
 
 
