@@ -2,19 +2,17 @@
 
 <div class="">
 <ul>
-    <li id="studentList">Students</li>
+    <li id="studentList" >Students</li>
     <a href="/teacher/addtask">
         <li>Add Task</li>
     </a>
     <li id="taskList">Task List</li>
-    <li>Add Notes</li>
     <a href="/teacher/rewardStudents">
         <li>Reward Students</li>
     </a>
-    <li>Forum</li>
 </ul>
 </div>
-<div class="" id="container">
+<div id="container" style="display: flex;">
 
 </div>
 <%- include("footer") %>
@@ -30,7 +28,7 @@
             myJson.forEach(e => {
                 var result = e.xp.find( ({ subjectName }) => subjectName === `<%= user.subject%>` );
                 
-                s=s+`<div class="">
+                s=s+`<div style="margin: 1rem ;">
                             <h3>Name</h3> 
                             <h3>${e.name}</h3>
                             <h3>${e.class}</h3>
@@ -49,18 +47,18 @@
             myJson.taskList.forEach(e => {
                 if(e.class==classnum){
                     e.tasks.forEach(element => {
-                        s=s+`<div class="">
+                        s=s+`<div style="margin: 1rem ;">
                                     <h3>${element.taskName}</h3>
                                     <h3>${element.taskDescription}</h3>
                                     <h3>${element.startDate}</h3>
-                                    <h3>${element.EndDate}</h3>
+                                    <h3>${element.endDate}</h3>
                             </div>`
                         
                     });
                 }
             });
 
-            s=`<h3>Tasks</h3>`+s;
+            s=`<h2>Tasks :- </h2>`+s;
 
             container.innerHTML=s;
 
