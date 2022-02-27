@@ -1,0 +1,29 @@
+<%- include("header") %> 
+
+<div class="">
+    <form action="/teacher/submittask" method="post">
+        <label for="className">class Number</label>
+        <input type="text" id="className" name="currentclass">
+
+        <label for="taskname">TaskName</label>
+        <input type="text" name="taskname" id="taskname">
+
+        <label for="taskDescription">TaskDescription</label>
+        <input type="text" name="taskDescription" id="taskDescription">
+
+        <label for="startDate">StartDate</label>
+        <input type="text" name="startDate" id="startDate" placeholder="YYYY-MM-DD">
+
+        <label for="EndDate">EndDate</label>
+        <input type="text" name="EndDate" id="EndDate" placeholder="YYYY-MM-DD">
+
+        <button type="submit">Submit</button>
+
+    </form>
+</div>
+
+
+
+
+
+<%- include("footer") %> 
