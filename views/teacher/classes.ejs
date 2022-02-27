@@ -1,0 +1,18 @@
+<%- include("header") %> 
+
+<div class="">
+    <ul>
+        <h1>Welcome Mr.<%=user.name%>  </h1>
+        <% user.class.forEach(element => { %>
+            <a href= <%= "/teacher/class:"+element %> ><li><%= "class "+element %> </li></a>
+        <% }) %>
+    </ul>
+
+    <a href="/teacher/logout"><h3>Logout</h3></a>
+</div>
+
+
+
+
+
+<%- include("footer") %> 
