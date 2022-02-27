@@ -83,6 +83,8 @@ app.get('/students', async (req, res) => {
 
 app.get("/student/dashboard", async (req, res) => {
     let { subject, clas } = req.cookies;
+    console.log(subject);
+    console.log(clas);
     const email = req.session.user;
     const student = await students.findOne({ email: email });
 
@@ -92,15 +94,16 @@ app.get("/student/dashboard", async (req, res) => {
     // accessing the teacher who teaches the subject
     const teacher = await teachers.findOne({ subject: subject, schoolId: student.schoolId, class: { $in: [clas] } })
 
+
     // providing tasks
     const taskList = teacher.taskList;
     let tasks = [];
-    for (task of taskList) {
-        if (task["class"] = clas)
+
+    taskList.forEach(task => {
+        if (task["class"] === clas)
             tasks = task["tasks"];
-    }
-    console.log(tasks);
-    res.render('students/dashboard.ejs', { allStudents, tasks });
+    });
+    res.render('students/dashboard.ejs', { allStudents, tasks,student,teacher });
 })
 
 
