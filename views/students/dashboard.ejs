@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <link rel="stylesheet" href="/css/studentDashboard.css">
+</head>
+
+<body>
+
+    <main class="main">
+        <aside class="sidebar">
+            <nav class="nav">
+                <ul>
+                    <li class="entries active"><a href="#">Dashboard</a></li>
+                    <li class="entries"><a href="#">Students</a></li>
+                    <li class="entries"><a href="#">Tasks</a></li>
+                    <li class="entries"><a href="#">Activity</a></li>
+                    <li class="entries"><a href="#">Forum</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <section class="twitter">
+            <div class="container" id="wrapper">
+                <div class="show" id="Dashboard">For Dashboard</div>
+                <div class="hidden" id="Students">
+                    <% for(let x=0;x<allStudents.length;x++){ %>
+                        <p>
+                            <b>
+                                <%=x+1 %>.
+                            </b>
+                            <%= allStudents[x].name %>
+                        </p>
+                        <% } %>
+                </div>
+                <div class="hidden" id="Tasks">
+                    <% for(let x=0;x<tasks.length;x++){ %>
+                        <p>
+                            <b>
+                                <%=x+1 %>.
+                            </b>
+                            <%= tasks[x].taskName %>
+                        </p>
+                        <% } %>
+                </div>
+                <div class="hidden" id="Activity">For Activity Status</div>
+                <div class="hidden" id="Forum">For Forum</div>
+            </div>
+        </section>
+    </main>
+
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- <script src="/js/studentDashboard.js"></script> -->
+
+    <script>
+        $('.entries').on('click', function (e) {
+            let id = $(this).text();
+            id = "#" + id;
+            if ($(id).hasClass('hidden')) {
+                $('.show').addClass('hidden');
+                $('.show').removeClass('show');
+                $(id).removeClass('hidden');
+                $(id).addClass('show');
+            }
+            $('.active').removeClass('active');
+            $(this).addClass('active');
+        })
+    </script>
+</body>
+
+</html>

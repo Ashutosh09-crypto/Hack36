@@ -5,7 +5,9 @@ const mongoose = require('mongoose');
 const cookieSession = require('cookie-session');
 const flash = require('connect-flash');
 const bodyParser = require('body-parser');
-const session = require('express-session')
+const session = require('express-session');
+const cookieParser = require("cookie-parser");
+const { resolveSoa } = require('dns');
 
 const teachers = require('./models/teacher.js');
 const students = require('./models/student.js');
@@ -32,6 +34,74 @@ app.use(session({
 }))
 
 app.use(flash());
+
+app.use(cookieParser());
+// parse application/json
+app.use(bodyParser.json())
+
+
+
+
+
+app.get('/logout', (req, res) => {
+    req.session = null;
+    res.redirect('/studentLogin');
+})
+// student routes
+
+// student logging in
+app.get("/studentLogin", async (req, res) => {
+    res.render("students/login.ejs");
+})
+
+
+// processing student login post request
+app.post("/studentLogin", async (req, res) => {
+    const { studentId, studentPassword } = req.body;
+    const student = await students.findOne({ email: studentId, dob: studentPassword });
+
+    if (!student) {
+        res.send("Sorry, no such user exists!");
+    }
+    else {
+        req.session.userType = "student";
+        req.session.user = studentId;
+        res.redirect("/students");
+    }
+})
+
+app.get('/students', async (req, res) => {
+    const email = req.session.user;
+    const student = await students.findOne({ email: email });
+    let clas = student.class;
+    const subjects = student.subject;
+    console.log(subjects);
+
+    res.render('students/students.ejs', { clas, subjects });
+})
+
+
+app.get("/student/dashboard", async (req, res) => {
+    let { subject, clas } = req.cookies;
+    const email = req.session.user;
+    const student = await students.findOne({ email: email });
+
+    // providing all students
+    const allStudents = await students.find({ class: clas, schoolId: student.schoolId });
+
+    // accessing the teacher who teaches the subject
+    const teacher = await teachers.findOne({ subject: subject, schoolId: student.schoolId, class: { $in: [clas] } })
+
+    // providing tasks
+    const taskList = teacher.taskList;
+    let tasks = [];
+    for (task of taskList) {
+        if (task["class"] = clas)
+            tasks = task["tasks"];
+    }
+    console.log(tasks);
+    res.render('students/dashboard.ejs', { allStudents, tasks });
+})
 
 
 //teacher route
@@ -150,9 +220,6 @@ app.post("/teacher/submitreward",async(req,res)=>{
 
 
 })
-
-
-
 
 
 app.listen(3000, () => {
