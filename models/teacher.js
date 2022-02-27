@@ -25,7 +25,7 @@ const teacherSchema = new mongoose.Schema({
         required: true
     },
     taskList: {
-        type: [{ class: String, tasks: [{ taskName: String, taskDescription: String, startDate: Date, endDate: Date }] }]   // task -> (task-name, task-description, startDate, deadline);
+        type: [{ class: String, tasks: [{ taskName: String, taskDescription: String, startDate: String, endDate: String }] }]   // task -> (task-name, task-description, startDate, deadline);
     }
     ,
     notes: {

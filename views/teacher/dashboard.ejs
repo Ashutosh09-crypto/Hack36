@@ -1,0 +1,81 @@
+<%- include("header") %>
+
+<div class="">
+<ul>
+    <li id="studentList">Students</li>
+    <a href="/teacher/addtask">
+        <li>Add Task</li>
+    </a>
+    <li id="taskList">Task List</li>
+    <li>Add Notes</li>
+    <li>Reward Students</li>
+    <li>Forum</li>
+</ul>
+</div>
+<div class="" id="container">
+
+</div>
+<%- include("footer") %>
+    
+<script>
+    const container = document.getElementById("container");
+    const classnum = <%= num.substring(1,)%>;
+
+    const callstudentdata = async()=>{
+            const response = await fetch('/studentsdata:'+classnum);
+            const myJson = await response.json();
+            let s ="";
+            myJson.forEach(e => {
+                var result = e.xp.find( ({ subjectName }) => subjectName === `<%= user.subject%>` );
+                
+                s=s+`<div class="">
+                            <h3>Name</h3> 
+                            <h3>${e.name}</h3>
+                            <h3>${e.class}</h3>
+                            <h3>${result.Xp}</h3>
+                    </div>`
+            });
+
+            container.innerHTML=s;
+
+        }
+
+    const calltask = async()=>{
+            let s ="";
+            const response = await fetch('/taskdata:'+classnum);
+            const myJson = await response.json();
+            myJson.taskList.forEach(e => {
+                if(e.class==classnum){
+                    e.tasks.forEach(element => {
+                        s=s+`<div class="">
+                                    <h3>${element.taskName}</h3>
+                                    <h3>${element.taskDescription}</h3>
+                                    <h3>${element.startDate}</h3>
+                                    <h3>${element.EndDate}</h3>
+                            </div>`
+                        
+                    });
+                }
+            });
+
+            s=`<h3>Tasks</h3>`+s;
+
+            container.innerHTML=s;
+
+        }
+
+    
+
+    document.getElementById("studentList").addEventListener("click", () => {
+
+        callstudentdata();
+    });
+
+    document.getElementById("taskList").addEventListener("click", () => {
+        calltask();
+    });
+
+</script>
+
+
+
