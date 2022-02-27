@@ -41,7 +41,9 @@ app.use(cookieParser());
 app.use(bodyParser.json())
 
 
-
+app.get("/",(req,res)=>{
+    res.render("selector");
+})
 
 
 app.get('/logout', (req, res) => {
