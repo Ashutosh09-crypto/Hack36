@@ -1,0 +1,48 @@
+<%- include("header") %> 
+
+<div class="">
+    <form action="/teacher/submitreward" method="post">
+
+        <label for="class">Select Class</label>
+
+        <select name="class" id="class" onchange="callstudentdata()">
+            <% user.class.forEach(element => { %>
+                <option value=<%= element %> > <%= element %> </option>
+            <% }) %>
+        </select>
+
+        <label for="students">Students Name</label>
+        <select name="students" id="students">
+        </select>
+
+        <label for="xp">Enter Xp To be added</label>
+        <input type="number" id="xp" name="xp">
+
+        <button type="submit">Submit</button>
+
+    </form>
+</div>
+
+
+
+<%- include("footer") %> 
+
+<script>
+    const container = document.getElementById("students");
+    
+    const callstudentdata = async()=>{
+            const classnum = document.getElementById("class").value;
+            const response = await fetch('/studentfromclassx:'+classnum);
+            const myJson = await response.json();
+            let s ="";
+            myJson.forEach(e => {
+                s=s+`<option value= "${e._id}" >${e.name}</option>`
+            });
+
+            container.innerHTML=s;
+            console.log(myJson)
+            console.log(classnum)
+
+        }
+
+</script>

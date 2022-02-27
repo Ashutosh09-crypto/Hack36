@@ -31,9 +31,12 @@ app.use(session({
     cookie: { maxAge: 1 * 60 * 60 * 1000 },
 }))
 
+app.use(flash());
+
 
 //teacher route
 app.get("/teacher/login", (req, res) => {
+    
     res.render("teacher/login.ejs");
 })
 
@@ -108,6 +111,45 @@ app.post("/teacher/submittask",async (req,res)=>{
     res.redirect("/teacher/classes");
 
 });
+
+app.get("/teacher/rewardStudents",async(req,res)=>{
+    const currentteacher = (req.session.teacherData);
+
+    res.render("teacher/rewardStudent",{user:currentteacher});
+});
+
+app.get("/studentfromclassx:class",async (req,res)=>{
+
+    const currentclass=req.params.class.substring(1,);
+    const currentteacher = (req.session.teacherData);
+
+    if(currentteacher && currentclass){
+        const users = await students.find({schoolld:currentteacher.schoolld,class:currentclass,subject : { $elemMatch : {$eq:currentteacher.subject}}})
+        res.send(JSON.stringify(users));
+    }
+
+})
+
+app.post("/teacher/submitreward",async(req,res)=>{
+
+    const currentteacher = (req.session.teacherData);
+
+    if(currentteacher){
+        const stu = await students.findById({_id: (req.body.students)});
+        let currentxp;
+
+        stu.xp.forEach(e => {
+            if(e.subjectName===currentteacher.subject){
+                currentxp= e.Xp;
+            }
+        });
+
+        await students.updateOne({_id: (req.body.students),"xp.subjectName" : currentteacher.subject},{$set:{"xp.$.Xp": parseInt(currentxp+parseInt(req.body.xp))}});
+        res.redirect("/teacher/classes");
+    }
+
+
+})
 
 
 
